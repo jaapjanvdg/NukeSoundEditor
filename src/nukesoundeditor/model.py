@@ -1,14 +1,32 @@
-from PySide2.QtMultimedia import QMediaPlayer, QMediaContent
-from PySide2.QtCore import QUrl, QSettings
+import nuke
+if nuke.NUKE_VERSION_MAJOR < 16: 
+    from PySide2.QtMultimedia import QMediaPlayer, QMediaContent
+    from PySide2.QtCore import QUrl, QSettings
+else:
+    from PySide6.QtMultimedia import QMediaPlayer
+    from PySide6.QtCore import QUrl, QSettings
 
-audio_player = QMediaPlayer()
+
+if not hasattr(nuke, "_render_sound_player"):
+    nuke._render_sound_player = QMediaPlayer()
+
+audio_player = nuke._render_sound_player
 
 def render_sound():
     if not is_render_sound_enabled():
         return
     
-    audio_player.setMedia(QMediaContent(QUrl.fromLocalFile(QSettings().value("NukeRenderSound/AudioFile"))))
-    audio_player.setVolume(int(QSettings().value("NukeRenderSound/AudioFile/Volume")))
+    file_path = QSettings().value("NukeRenderSound/AudioFile")
+    volume = int(QSettings().value("NukeRenderSound/AudioFile/Volume"))
+
+    if nuke.NUKE_VERSION_MAJOR < 16:
+        audio_player.setMedia(QMediaContent(QUrl.fromLocalFile(file_path)))
+    else:
+        audio_player.setSource(QUrl.fromLocalFile(file_path))
+
+    audio_player.stop()
+    audio_player.setPosition(0)
+    audio_player.setVolume(volume)
     audio_player.play()
 
 def initialize_settings(path=None):

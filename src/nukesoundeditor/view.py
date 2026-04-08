@@ -1,5 +1,11 @@
-from PySide2.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QCheckBox, QSlider
-from PySide2.QtCore import Qt
+import nuke
+if nuke.NUKE_VERSION_MAJOR < 16: 
+    from PySide2.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QCheckBox, QSlider
+    from PySide2.QtCore import Qt
+else:
+    from PySide6.QtWidgets import QWidget, QPushButton, QVBoxLayout, QLabel, QCheckBox, QSlider
+    from PySide6.QtCore import Qt
+
 
 class SoundEditorView(QWidget):
     def __init__(self, ):
